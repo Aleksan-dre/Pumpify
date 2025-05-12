@@ -15,7 +15,22 @@ struct GoogleSignInButton: View {
     }
     
     var body: some View {
-        Text("Google Sign In Button")
+        Button(action: action) {
+            HStack {
+                Image("google-icon")
+                    .resizable()
+                    .frame(width: 32, height: 32)
+                    .clipShape(.circle)
+                Text("Sign in with Google")
+                    .fontWeight(.medium)
+                    .foregroundStyle(Color.white)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(Color.black)
+            .clipShape(.rect(cornerRadius: 16))
+        }
+        .buttonStyle(.plain)
     }
 }
 

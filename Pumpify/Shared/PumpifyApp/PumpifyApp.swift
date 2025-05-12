@@ -28,11 +28,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct PumpifyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @AppStorage("isSignedIn") var isSignedIn = false
     
     var body: some Scene {
         WindowGroup {
-            if !isSignedIn {
+            if AuthService.shared.getCurrentUser() == nil {
                 LoginView(viewModel: LoginViewModel())
             } else {
                 ContentView()

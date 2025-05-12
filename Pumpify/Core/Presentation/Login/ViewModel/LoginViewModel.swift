@@ -17,7 +17,6 @@ final class LoginViewModel: ObservableObject {
             case .success(let user):
                 DispatchQueue.main.async {
                     print(user.email ?? "No email")
-                    UserDefaults.standard.set(true, forKey: "isSignedIn")
                 }
             case .failure(let error):
                 print("Error signing in: \(error.localizedDescription)")

@@ -11,8 +11,7 @@ struct LoginView: View {
     @StateObject var viewModel: LoginViewModel
     
     var body: some View {
-        Button("Google Sign In") {
-            viewModel.loginWithGoogle()
-        }
+        GoogleSignInButton(action: viewModel.loginWithGoogle)
+            .padding(.horizontal)
     }
 }

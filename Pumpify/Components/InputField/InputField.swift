@@ -87,7 +87,7 @@ struct InputField: View {
     }
     
     var body: some View {
-        let borderColor: Color = isEnabled ? (isValidInput ? .grayPrimary : .systemError) : .grayTertiary
+        let borderColor: Color = isEnabled ? (isValidInput ? .gray : .systemError) : .gray
         
         return VStack(alignment: .leading, spacing: .assets.xs4) {
             HStack {
@@ -146,22 +146,35 @@ private struct InputFieldActionButton: View {
     
     var body: some View {
         if isPassword {
-            Button(action: {
-                isSecure.wrappedValue.toggle()
-            }) {
-                Image(systemName: isSecure.wrappedValue ? Constants.SymbolNames.eyeSlash : Constants.SymbolNames.eye)
-                    .foregroundColor(.graySecondary)
+            HStack {
+                clearButton
+                eyeButton
             }
-            .padding(.trailing, .assets.xs4)
-        } else if !text.wrappedValue.isEmpty {
-            Button(action: {
-                text.wrappedValue = .empty
-            }) {
+        } else {
+            clearButton
+        }
+    }
+}
+
+private extension InputFieldActionButton {
+    @ViewBuilder
+    var clearButton: some View {
+        if !text.wrappedValue.isEmpty {
+            Button(action: { text.wrappedValue = .empty }) {
                 Image(systemName: Constants.SymbolNames.xmark)
                     .foregroundStyle(.graySecondary)
+                    .padding(.trailing, .assets.xs3)
             }
-            .padding(.trailing, .assets.xs3)
         }
+    }
+    
+    var eyeButton: some View {
+        Button(action: { isSecure.wrappedValue.toggle() })
+        {
+            Image(systemName: isSecure.wrappedValue ? Constants.SymbolNames.eyeSlash : Constants.SymbolNames.eye)
+                .foregroundColor(.graySecondary)
+        }
+        .padding(.trailing, .assets.xs4)
     }
 }
 

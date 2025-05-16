@@ -29,7 +29,7 @@ struct GeneralButton: View {
                 .foregroundStyle(Color.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
-                .background(isEnabled ? Color.orange : Color.gray)
+                .background(isEnabled ? Color.orange : Color.orange.opacity(0.95))
                 .clipShape(.rect(cornerRadius: 16))
                 .opacity(isEnabled ? 1.0 : 0.6)
         }

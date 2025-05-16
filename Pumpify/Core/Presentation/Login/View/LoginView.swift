@@ -19,6 +19,7 @@ struct LoginView: View {
 private extension LoginView {
     var content: some View {
         VStack(spacing: .zero) {
+            header
             Spacer(minLength: .zero)
             emailField
             passwordField
@@ -31,10 +32,17 @@ private extension LoginView {
 
 // MARK: - Title
 private extension LoginView {
-    var title: some View {
-        Text("Login")
-            .font(.title)
-            .foregroundColor(.primary)
+    var header: some View {
+        VStack(spacing: .assets.xs) {
+            Text("Pumpify")
+                .fontWeight(.bold)
+                .font(.system(size: 56, weight: .heavy, design: .default))
+                .foregroundColor(.primary)
+            
+            Text("Pump your body")
+                .font(.system(size: 24, weight: .regular, design: .serif))
+        }
+        .padding(.top, .assets.xl5)
     }
 }
 
@@ -50,7 +58,7 @@ private extension LoginView {
             errorMessage: $viewModel.emailErrorMessage,
             isEnabled: true
         )
-        .padding(.horizontal, .assets.xs)
+        .padding(.horizontal, .assets.lg)
         .padding(.bottom, .assets.xs3)
     }
     
@@ -64,7 +72,7 @@ private extension LoginView {
             errorMessage: $viewModel.passwordErrorMessage,
             isEnabled: true
         )
-        .padding(.horizontal, .assets.xs)
+        .padding(.horizontal, .assets.lg)
         .padding(.bottom, .assets.xl2)
     }
 }

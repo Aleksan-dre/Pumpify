@@ -8,6 +8,7 @@
 import SwiftUI
 import FirebaseCore
 import GoogleSignIn
+import AVFoundation
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
@@ -32,9 +33,13 @@ struct PumpifyApp: App {
     var body: some Scene {
         WindowGroup {
             if AuthService.shared.getCurrentUser() == nil {
-                LoginView(viewModel: LoginViewModel())
+                LoginViewFactory
+                    .makeView()
+                    .tint(.orange)
             } else {
-                ContentView()
+                MainTabViewFactory
+                    .makeView()
+                    .tint(.orange)
             }
         }
     }

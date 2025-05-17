@@ -14,13 +14,14 @@ import FirebaseCore
 final class LoginViewModel: ObservableObject {
     @Published var email: String = .empty
     @Published var password: String = .empty
-    @Published var isEmailValid: Bool = true
-    @Published var isPasswordValid: Bool = true
-    @Published var isEmailCorrect: Bool = true
-    @Published var isPasswordCorrect: Bool = true
     @Published var emailErrorMessage: String? = .empty
     @Published var passwordErrorMessage: String? = .empty
-    @Published var isButtonActive: Bool = false
+    @Published var isEmailValid = true
+    @Published var isPasswordValid = true
+    @Published var isEmailCorrect = true
+    @Published var isPasswordCorrect = true
+    @Published var isButtonActive = false
+    @Published var isLoggedIn = false
     @Published var showAlert = false
     
     private var cancellables: Set<AnyCancellable> = []
@@ -63,7 +64,7 @@ final class LoginViewModel: ObservableObject {
             switch result {
             case .success(let user):
                 DispatchQueue.main.async {
-                    print(user.email ?? "No email")
+                    self.isLoggedIn = true
                 }
             case .failure(let error):
                 print("Error signing in: \(error.localizedDescription)")

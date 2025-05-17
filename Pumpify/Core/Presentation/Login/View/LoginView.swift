@@ -27,6 +27,9 @@ private extension LoginView {
             Spacer(minLength: .zero)
             googleButton
         }
+        .navigationDestination(isPresented: $viewModel.isLoggedIn) {
+            MainTabViewFactory.makeView()
+        }
     }
 }
 

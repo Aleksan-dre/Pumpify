@@ -118,6 +118,7 @@ struct InputField: View {
                             .keyboardType(keyboardType)
                             .frame(height: .assets.xl2)
                             .autocorrectionDisabled(true)
+                            .textInputAutocapitalization(.never)
                     }
                 }
                 

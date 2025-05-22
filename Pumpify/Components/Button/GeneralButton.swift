@@ -11,13 +11,16 @@ struct GeneralButton: View {
     private let title: String
     private let action: () -> Void
     private let isEnabled: Bool
+    private let color: Color
     
     init(
         title: String,
         isEnabled: Bool = true,
+        color: Color = .orange,
         action: @escaping () -> Void
     ) {
         self.title = title
+        self.color = color
         self.action = action
         self.isEnabled = isEnabled
     }
@@ -29,7 +32,7 @@ struct GeneralButton: View {
                 .foregroundStyle(Color.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
-                .background(isEnabled ? Color.orange : Color.orange.opacity(0.95))
+                .background(isEnabled ? color : color.opacity(0.95))
                 .clipShape(.rect(cornerRadius: 16))
                 .opacity(isEnabled ? 1.0 : 0.6)
         }

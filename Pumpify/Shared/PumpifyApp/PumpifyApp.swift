@@ -16,6 +16,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
         FirebaseApp.configure()
+        AuthService.shared.refreshUser()
         return true
     }
     
@@ -29,16 +30,17 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct PumpifyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
+    @State private var isLoggedIn = AuthService.shared.getCurrentUser() != nil
+
     var body: some Scene {
         WindowGroup {
-            if AuthService.shared.getCurrentUser() == nil {
+            if !isLoggedIn {
                 LoginViewFactory
                     .makeView()
                     .tint(.orange)
             } else {
                 MainTabViewFactory
-                    .makeView()
+                    .makeView(onSignOut: { isLoggedIn = false })
                     .tint(.orange)
             }
         }

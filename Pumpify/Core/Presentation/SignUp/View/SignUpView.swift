@@ -15,7 +15,7 @@ struct SignUpView: View {
             content
                 .navigationTitle("Create Account")
                 .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-                    MainTabViewFactory.makeView(onSignOut: {})
+                    MainTabViewFactory.makeView()
                 }
         }
     }

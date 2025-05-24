@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainTabViewFactory {
-    static func makeView(onSignOut: @escaping () -> Void) -> some View {
-        MainTabView(signOutAction: onSignOut)
+    static func makeView() -> some View {
+        MainTabView()
     }
 }

@@ -10,6 +10,10 @@ import FirebaseCore
 import GoogleSignIn
 import AVFoundation
 
+final class AuthState: ObservableObject {
+    @Published var isLoggedIn = AuthService.shared.getCurrentUser() != nil
+}
+
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
         _ application: UIApplication,
@@ -30,18 +34,16 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct PumpifyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @State private var isLoggedIn = AuthService.shared.getCurrentUser() != nil
-
+    @StateObject private var authState = AuthState()
+    
     var body: some Scene {
         WindowGroup {
-            if !isLoggedIn {
-                LoginViewFactory
-                    .makeView()
-                    .tint(.orange)
+            if authState.isLoggedIn {
+                MainTabViewFactory.makeView()
+                    .environmentObject(authState)
             } else {
-                MainTabViewFactory
-                    .makeView(onSignOut: { isLoggedIn = false })
-                    .tint(.orange)
+                LoginViewFactory.makeView()
+                    .environmentObject(authState)
             }
         }
     }

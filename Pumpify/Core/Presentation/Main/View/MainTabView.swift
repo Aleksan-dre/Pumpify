@@ -12,9 +12,8 @@ private enum AppTab {
 }
 
 struct MainTabView: View {
+    @EnvironmentObject private var authState: AuthState
     @State private var selectedTab: AppTab = .exercise
-
-    let signOutAction: () -> Void
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -51,6 +50,7 @@ struct MainTabView: View {
                     action: {
                         do {
                             try AuthService.shared.signOut()
+                            authState.isLoggedIn = false
                         } catch {
                             print("Sign out failed: \(error.localizedDescription)")
                         }

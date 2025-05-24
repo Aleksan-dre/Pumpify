@@ -18,7 +18,7 @@ struct LoginView: View {
                     SignUpViewFactory.makeView()
                 }
                 .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-                    MainTabViewFactory.makeView(onSignOut: {})
+                    MainTabViewFactory.makeView()
                 }
         }
     }

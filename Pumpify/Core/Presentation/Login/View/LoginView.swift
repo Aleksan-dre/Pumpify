@@ -9,9 +9,18 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject var viewModel: LoginViewModel
+    @State var isSignUpPresented = false
     
     var body: some View {
-        content
+        NavigationStack {
+            content
+                .navigationDestination(isPresented: $isSignUpPresented) {
+                    SignUpViewFactory.makeView()
+                }
+                .navigationDestination(isPresented: $viewModel.isLoggedIn) {
+                    MainTabViewFactory.makeView()
+                }
+        }
     }
 }
 
@@ -25,10 +34,8 @@ private extension LoginView {
             passwordField
             submitButton
             Spacer(minLength: .zero)
+            signUpWithEmailButton
             googleButton
-        }
-        .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-            MainTabViewFactory.makeView()
         }
     }
 }
@@ -86,16 +93,30 @@ private extension LoginView {
         GeneralButton(
             title: Constants.buttonText,
             isEnabled: viewModel.isButtonActive,
-            action: { }
+            action: viewModel.logInWithEmailAndPassword
         )
         .padding(.bottom, .assets.xl)
         .padding(.horizontal, .assets.xl5)
     }
     
     var googleButton: some View {
-        GoogleSignInButton(action: viewModel.loginWithGoogle)
-            .padding(.horizontal, .assets.sm)
-            .padding(.bottom, .assets.xl3)
+        SignInButton(
+            title: "Continue with Google",
+            icon: Image("google-icon"),
+            action: viewModel.loginWithGoogle
+        )
+        .padding(.horizontal, .assets.sm)
+        .padding(.bottom, .assets.xl3)
+    }
+    
+    var signUpWithEmailButton: some View {
+        SignInButton(
+            title: "Register with Email",
+            icon: Image("envelope-icon"),
+            action: { isSignUpPresented = true }
+        )
+        .padding(.horizontal, .assets.sm)
+        .padding(.bottom, .assets.sm)
     }
 }
 

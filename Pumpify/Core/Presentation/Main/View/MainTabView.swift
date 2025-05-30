@@ -12,8 +12,9 @@ private enum AppTab {
 }
 
 struct MainTabView: View {
+    @EnvironmentObject private var authState: AuthState
     @State private var selectedTab: AppTab = .exercise
-
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             // MARK: - Music Player
@@ -44,7 +45,17 @@ struct MainTabView: View {
             
             // MARK: – Settings Tab
             NavigationStack {
-                Text("Settings")
+                GeneralButton(
+                    title: "Sign Out",
+                    action: {
+                        do {
+                            try AuthService.shared.signOut()
+                            authState.isLoggedIn = false
+                        } catch {
+                            print("Sign out failed: \(error.localizedDescription)")
+                        }
+                    }
+                )
             }
             .tabItem {
                 Label("Settings", systemImage: "gearshape")

@@ -14,10 +14,6 @@ final class AuthService {
     private var idToken: String?
     private var accessToken: String?
     private var currentUser: User?
-
-    private init() {
-        refreshUser()
-    }
     
     func loginWithGoogle(completion: @escaping (Result<User, Error>) -> Void) {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
@@ -59,6 +55,58 @@ final class AuthService {
         }
     }
     
+    func signUpWithEmail(
+        email: String,
+        password: String,
+        completion: @escaping (
+            Result<User, Error>
+        ) -> Void
+    ) {
+        Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let user = result?.user else {
+                completion(.failure(NSError(domain: "No user returned", code: 0, userInfo: nil)))
+                return
+            }
+
+            self?.currentUser = user
+            user.getIDToken { token, error in
+                self?.idToken = token
+            }
+
+            completion(.success(user))
+        }
+    }
+    
+    func logInWithEmailAndPassword(
+        email: String,
+        password: String,
+        completion: @escaping (Result<User, Error>) -> Void
+    ) {
+        Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let user = authResult?.user else {
+                completion(.failure(NSError(domain: "No user returned", code: 0, userInfo: nil)))
+                return
+            }
+
+            self?.currentUser = user
+            user.getIDToken { token, error in
+                self?.idToken = token
+            }
+
+            completion(.success(user))
+        }
+    }
+    
     func getCurrentUser() -> User? {
         return currentUser
     }
@@ -72,6 +120,7 @@ final class AuthService {
     }
     
     func refreshUser() {
+        guard FirebaseApp.app() != nil else { return }
         currentUser = Auth.auth().currentUser
     }
     

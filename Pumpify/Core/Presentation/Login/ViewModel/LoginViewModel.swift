@@ -62,7 +62,23 @@ final class LoginViewModel: ObservableObject {
     func loginWithGoogle() {
         AuthService.shared.loginWithGoogle { result in
             switch result {
-            case .success(let user):
+            case .success:
+                DispatchQueue.main.async {
+                    self.isLoggedIn = true
+                }
+            case .failure(let error):
+                print("Error signing in: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func logInWithEmailAndPassword() {
+        AuthService.shared.logInWithEmailAndPassword(
+            email: email,
+            password: password
+        ) { result in
+            switch result {
+            case .success:
                 DispatchQueue.main.async {
                     self.isLoggedIn = true
                 }

@@ -12,7 +12,6 @@ private enum AppTab {
 }
 
 struct MainTabView: View {
-    @EnvironmentObject private var authState: AuthState
     @State private var selectedTab: AppTab = .exercise
     
     var body: some View {
@@ -25,10 +24,7 @@ struct MainTabView: View {
                 .tag(AppTab.music)
             
             // MARK: – Exercises
-            NavigationStack {
-                // Suppose HomeViewFactory makes HomeViewController/ViewModel
-                Text("Excersises")
-            }
+            HomeView()
             .tabItem {
                 Label("Excersises", systemImage: "dumbbell")
             }
@@ -43,20 +39,8 @@ struct MainTabView: View {
             }
             .tag(AppTab.stats)
             
-            // MARK: – Settings Tab
-            NavigationStack {
-                GeneralButton(
-                    title: "Sign Out",
-                    action: {
-                        do {
-                            try AuthService.shared.signOut()
-                            authState.isLoggedIn = false
-                        } catch {
-                            print("Sign out failed: \(error.localizedDescription)")
-                        }
-                    }
-                )
-            }
+            // MARK: – Settings
+            SettingsView()
             .tabItem {
                 Label("Settings", systemImage: "gearshape")
             }

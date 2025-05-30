@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @EnvironmentObject private var authState: AuthState
     @State private var notificationsEnabled = true
     @State private var darkModeEnabled = false
     @State private var username = "User"
@@ -47,7 +48,13 @@ struct SettingsView: View {
                 
                 Section {
                     Button("Log Out") {
-                        // Action to log out
+                        
+                        do {
+                            try AuthService.shared.signOut()
+                            authState.isLoggedIn = false
+                        } catch {
+                            print("Sign out failed: \(error.localizedDescription)")
+                        }
                     }
                     .foregroundColor(.red)
                 }

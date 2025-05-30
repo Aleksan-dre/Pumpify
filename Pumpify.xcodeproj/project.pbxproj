@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C83FFA52DD2150D001F197D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83FFA42DD2150D001F197D /* GoogleSignIn */; };
+		2C83FFA72DD2150D001F197D /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83FFA62DD2150D001F197D /* GoogleSignInSwift */; };
 		2C8770C72DD0E7A400DB18BF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2C8770C62DD0E7A400DB18BF /* FirebaseAnalytics */; };
 		2C8770C92DD0E7A400DB18BF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2C8770C82DD0E7A400DB18BF /* FirebaseAuth */; };
 		2C8770CB2DD0E7A400DB18BF /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2C8770CA2DD0E7A400DB18BF /* FirebaseCore */; };
@@ -18,9 +20,22 @@
 		2C8770B12DD0E4DB00DB18BF /* Pumpify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pumpify.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2C83FFB52DD21711001F197D /* Exceptions for "Pumpify" folder in "Pumpify" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Shared/Info.plist,
+			);
+			target = 2C8770B02DD0E4DB00DB18BF /* Pumpify */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2C8770B32DD0E4DB00DB18BF /* Pumpify */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2C83FFB52DD21711001F197D /* Exceptions for "Pumpify" folder in "Pumpify" target */,
+			);
 			path = Pumpify;
 			sourceTree = "<group>";
 		};
@@ -33,9 +48,11 @@
 			files = (
 				2C8770C72DD0E7A400DB18BF /* FirebaseAnalytics in Frameworks */,
 				2C8770CD2DD0E7A400DB18BF /* FirebaseCrashlytics in Frameworks */,
+				2C83FFA72DD2150D001F197D /* GoogleSignInSwift in Frameworks */,
 				2C8770CB2DD0E7A400DB18BF /* FirebaseCore in Frameworks */,
 				2C8770CF2DD0E7A400DB18BF /* FirebaseFirestore in Frameworks */,
 				2C8770C92DD0E7A400DB18BF /* FirebaseAuth in Frameworks */,
+				2C83FFA52DD2150D001F197D /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +100,8 @@
 				2C8770CA2DD0E7A400DB18BF /* FirebaseCore */,
 				2C8770CC2DD0E7A400DB18BF /* FirebaseCrashlytics */,
 				2C8770CE2DD0E7A400DB18BF /* FirebaseFirestore */,
+				2C83FFA42DD2150D001F197D /* GoogleSignIn */,
+				2C83FFA62DD2150D001F197D /* GoogleSignInSwift */,
 			);
 			productName = Pumpify;
 			productReference = 2C8770B12DD0E4DB00DB18BF /* Pumpify.app */;
@@ -114,6 +133,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				2C8770C52DD0E7A400DB18BF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				2C83FFA32DD2150D001F197D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2C8770B22DD0E4DB00DB18BF /* Products */;
@@ -184,6 +204,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				EXCLUDED_ARCHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -247,6 +268,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				EXCLUDED_ARCHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -272,10 +294,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Pumpify/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Pumpify/Shared/Preview Content\"";
 				DEVELOPMENT_TEAM = H88DSNGQ2T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Pumpify/Shared/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -306,10 +329,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Pumpify/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Pumpify/Shared/Preview Content\"";
 				DEVELOPMENT_TEAM = H88DSNGQ2T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Pumpify/Shared/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -357,6 +381,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2C83FFA32DD2150D001F197D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 		2C8770C52DD0E7A400DB18BF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -368,6 +400,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2C83FFA42DD2150D001F197D /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2C83FFA32DD2150D001F197D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		2C83FFA62DD2150D001F197D /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2C83FFA32DD2150D001F197D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
 		2C8770C62DD0E7A400DB18BF /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2C8770C52DD0E7A400DB18BF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

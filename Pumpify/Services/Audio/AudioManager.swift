@@ -19,21 +19,38 @@ final class AudioManager: ObservableObject {
     @Published private(set) var duration: Double = 0
     @Published private(set) var currentTrack: Track?
 
-    private var tracks: [Track] = []
+    private var tracks = Set<Track>()  // Changed from array to set
     private var currentIndex = 0
     private var player: AVPlayer?
     private var timeObserver: Any?
-
+    
     private init() {
         configureAudioSession()
         setupRemoteCommandCenter()
+        loadSavedTracks()
     }
-
+    
+    private func loadSavedTracks() {
+        tracks = TrackStorageService.shared.loadTracks()
+        if !tracks.isEmpty {
+            prepareTrack()
+        }
+    }
+    
     // MARK: - Public API for ViewModel
-    func load(tracks: [Track]) {
-        guard !tracks.isEmpty else { return }
-        self.tracks.append(contentsOf: tracks)
-        prepareTrack()
+    func load(tracks newTracks: [Track]) {
+        guard !newTracks.isEmpty else { return }
+        let uniqueTracks = Set(newTracks)
+        let oldCount = self.tracks.count
+        self.tracks.formUnion(uniqueTracks)
+        
+        // Save tracks whenever new ones are added
+        TrackStorageService.shared.saveTracks(self.tracks)
+        
+        // Only prepare track if we actually added new tracks
+        if oldCount == 0 && !self.tracks.isEmpty {
+            prepareTrack()
+        }
     }
 
     func play() {
@@ -49,14 +66,16 @@ final class AudioManager: ObservableObject {
     }
     
     func playTrack(at index: Int) {
-        guard index >= 0 && index < tracks.count else { return }
+        let tracksArray = getTracks()
+        guard index >= 0 && index < tracksArray.count else { return }
         currentIndex = index
         prepareTrack()
         play()
     }
 
     func nextTrack() {
-        guard currentIndex + 1 < tracks.count else { return }
+        let tracksArray = getTracks()
+        guard currentIndex + 1 < tracksArray.count else { return }
         currentIndex += 1
         prepareTrack()
         play()
@@ -70,7 +89,7 @@ final class AudioManager: ObservableObject {
     }
     
     func getTracks() -> [Track] {
-        tracks
+        Array(tracks).sorted { $0.title < $1.title }
     }
 
     func seek(to time: Double) {
@@ -80,17 +99,46 @@ final class AudioManager: ObservableObject {
 
     // MARK: - Private Helpers
     private func prepareTrack() {
-        let track = tracks[currentIndex]
+        let tracksArray = getTracks()
+        guard currentIndex < tracksArray.count else { return }
+        let track = tracksArray[currentIndex]
         currentTrack = track
         let item = AVPlayerItem(url: track.url)
+        
+        // Load asset metadata
+        let asset = item.asset
+        asset.loadValuesAsynchronously(forKeys: ["duration"]) { [weak self] in
+            DispatchQueue.main.async {
+                if asset.statusOfValue(forKey: "duration", error: nil) == .loaded {
+                    self?.duration = asset.duration.seconds
+                }
+            }
+        }
+        
+        // Remove existing observer
         if let obs = timeObserver {
             player?.removeTimeObserver(obs)
             timeObserver = nil
         }
+        
+        // Create new player and observe status
         player = AVPlayer(playerItem: item)
-        duration = item.asset.duration.seconds
         observePlaybackTime()
+        observePlayerItem(item)
         updateNowPlayingInfo(clearPlaybackRate: true)
+    }
+    
+    private func observePlayerItem(_ item: AVPlayerItem) {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(playerItemDidReachEnd),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: item
+        )
+    }
+    
+    @objc private func playerItemDidReachEnd() {
+        nextTrack()
     }
 
     private func observePlaybackTime() {

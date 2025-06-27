@@ -9,7 +9,6 @@ import SwiftUI
 
 struct HomeView: View {
     var body: some View {
-        NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Header welcome section
@@ -105,8 +104,6 @@ struct HomeView: View {
                 }
             }
         }
-        .navigationBarBackButtonHidden(true)
-    }
 }
 
 #Preview {

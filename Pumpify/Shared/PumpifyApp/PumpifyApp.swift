@@ -9,6 +9,7 @@ import SwiftUI
 import FirebaseCore
 import GoogleSignIn
 import AVFoundation
+import SwiftData
 
 final class AuthState: ObservableObject {
     @Published var isLoggedIn = AuthService.shared.getCurrentUser() != nil
@@ -36,6 +37,8 @@ struct PumpifyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var authState = AuthState()
     
+    let container = ModelContainer.initializeModelContainer()
+    
     var body: some Scene {
         WindowGroup {
             if authState.isLoggedIn {
@@ -46,5 +49,6 @@ struct PumpifyApp: App {
                     .environmentObject(authState)
             }
         }
+        .modelContainer(container)
     }
 }

@@ -24,7 +24,7 @@ struct MainTabView: View {
                 .tag(AppTab.music)
             
             // MARK: – Exercises
-            HomeView()
+            Text("Exercises")
             .tabItem {
                 Label("Excersises", systemImage: "dumbbell")
             }

@@ -12,20 +12,20 @@ import SwiftData
 class Workout: Identifiable {
     var id: UUID  // Unique identifier for Identifiable protocol
     var name: String
-    var tasks: [Exercise]
+    var exercises: [Exercise]
     var startDate: Date  // Date type
     var priority: Int
     
     init(
         id: UUID = UUID(),
         name: String,
-        tasks: [Exercise] = [],
+        exercises: [Exercise] = [],
         startDate: Date,
         priority: Int = 2
     ) {
         self.id = id
         self.name = name
-        self.tasks = tasks
+        self.exercises = exercises
         self.startDate = startDate
         self.priority = priority
     }

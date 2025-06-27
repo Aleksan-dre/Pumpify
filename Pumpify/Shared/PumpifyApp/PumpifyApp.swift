@@ -42,10 +42,10 @@ struct PumpifyApp: App {
     var body: some Scene {
         WindowGroup {
             if authState.isLoggedIn {
-                MainTabViewFactory.makeView()
+                MainTabViewFactory.make()
                     .environmentObject(authState)
             } else {
-                LoginViewFactory.makeView()
+                LoginViewFactory.make()
                     .environmentObject(authState)
             }
         }

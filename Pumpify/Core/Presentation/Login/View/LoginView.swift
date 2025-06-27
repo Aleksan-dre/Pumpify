@@ -15,10 +15,10 @@ struct LoginView: View {
         NavigationStack {
             content
                 .navigationDestination(isPresented: $isSignUpPresented) {
-                    SignUpViewFactory.makeView()
+                    SignUpViewFactory.make()
                 }
                 .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-                    MainTabViewFactory.makeView()
+                    MainTabViewFactory.make()
                 }
         }
     }

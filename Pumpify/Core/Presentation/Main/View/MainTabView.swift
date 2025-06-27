@@ -17,7 +17,7 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // MARK: - Music Player
-            MusicPlayerViewFactory.makeView()
+            MusicPlayerViewFactory.make()
                 .tabItem {
                     Label("Music", systemImage: "music.note.list")
                 }

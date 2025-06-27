@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoginViewFactory {
-    static func makeView() -> some View {
+    static func make() -> some View {
         let viewModel = LoginViewModel()
         return LoginView(viewModel: viewModel)
     }

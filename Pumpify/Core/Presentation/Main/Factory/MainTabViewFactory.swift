@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainTabViewFactory {
-    static func makeView() -> some View {
+    static func make() -> some View {
         MainTabView()
     }
 }

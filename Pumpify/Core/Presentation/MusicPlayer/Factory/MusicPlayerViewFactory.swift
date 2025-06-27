@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MusicPlayerViewFactory {
-    static func makeView() -> some View {
+    static func make() -> some View {
         let viewModel = MusicPlayerViewModel()
         return MusicPlayerView(viewModel: viewModel)
     }

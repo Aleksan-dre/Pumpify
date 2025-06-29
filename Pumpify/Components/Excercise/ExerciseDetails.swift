@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct ExerciseDetailView: View {
+struct ExerciseDetails: View {
     var date: Date
     var maxViewDayCnt = 1 // use for count maxViewDate
     

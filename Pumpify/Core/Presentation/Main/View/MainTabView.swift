@@ -12,6 +12,7 @@ private enum AppTab {
 }
 
 struct MainTabView: View {
+    @Environment(\.modelContext) private var context
     @State private var selectedTab: AppTab = .exercise
     
     var body: some View {
@@ -24,18 +25,16 @@ struct MainTabView: View {
                 .tag(AppTab.music)
             
             // MARK: – Exercises
-            Text("Exercises")
+            HomeViewFactory.make()
             .tabItem {
-                Label("Excersises", systemImage: "dumbbell")
+                Label("Home", systemImage: "house")
             }
             .tag(AppTab.exercise)
 
             // MARK: – Statistics
-            NavigationStack {
-                Text("Statistics")
-            }
+            WorkoutsViewFactory.make(context: context)
             .tabItem {
-                Label("Stats", systemImage: "chart.xyaxis.line")
+                Label("Workouts", systemImage: "list.bullet.clipboard")
             }
             .tag(AppTab.stats)
             
@@ -46,5 +45,6 @@ struct MainTabView: View {
             }
             .tag(AppTab.settings)
         }
+        .navigationBarBackButtonHidden(true)
     }
 }

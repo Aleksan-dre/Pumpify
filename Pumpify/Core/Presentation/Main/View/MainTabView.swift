@@ -24,14 +24,14 @@ struct MainTabView: View {
                 }
                 .tag(AppTab.music)
             
-            // MARK: – Exercises
+            // MARK: – Home Page
             HomeViewFactory.make()
             .tabItem {
                 Label("Home", systemImage: "house")
             }
             .tag(AppTab.exercise)
 
-            // MARK: – Statistics
+            // MARK: – Workouts
             WorkoutsViewFactory.make(context: context)
             .tabItem {
                 Label("Workouts", systemImage: "list.bullet.clipboard")

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct LoginView: View {
     @StateObject var viewModel: LoginViewModel
@@ -18,7 +19,7 @@ struct LoginView: View {
                     SignUpViewFactory.make()
                 }
                 .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-                    MainTabViewFactory.make()
+                    MainTabViewFactory.make(context: ModelContainer.initializeModelContainer().mainContext)
                 }
         }
     }

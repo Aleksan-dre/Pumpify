@@ -32,7 +32,7 @@ class Workout: Identifiable {
 }
 
 @Model
-class Exercise: Identifiable {
+class Exercise: Identifiable, Hashable {
     var id: UUID  // Unique identifier for Identifiable protocol
     
     var name: String

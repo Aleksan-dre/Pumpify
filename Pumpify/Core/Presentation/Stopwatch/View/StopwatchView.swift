@@ -63,7 +63,12 @@ struct Stopwatch: View {
                     
                     if viewModel.hasStarted {
                         Button(action: {
-                            viewModel.save(context: context, dismiss: dismiss)
+                            Task {
+                                let success = await viewModel.save()
+                                if success {
+                                    dismiss()
+                                }
+                            }
                         }) {
                             Text("Finish")
                                 .padding()
@@ -88,7 +93,12 @@ struct Stopwatch: View {
                         }
                         
                         Button("Add manually") {
-                            viewModel.saveManual(context: context, dismiss: dismiss)
+                            Task {
+                                let success = await viewModel.saveManual()
+                                if success {
+                                    dismiss()
+                                }
+                            }
                         }
                         .disabled(viewModel.manualStartDate.withoutSeconds() == viewModel.manualEndDate.withoutSeconds())
                     }
@@ -96,5 +106,7 @@ struct Stopwatch: View {
                 }
             }
         }
+        .loadingOverlay(for: viewModel)
+        .errorAlert(for: viewModel)
     }
 }

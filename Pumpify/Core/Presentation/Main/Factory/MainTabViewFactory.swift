@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MainTabViewFactory {
-    static func make() -> some View {
-        MainTabView()
+    static func make(context: ModelContext) -> some View {
+        MainTabView(context: context)
     }
 }

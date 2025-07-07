@@ -12,8 +12,11 @@ extension ModelContainer {
     static func initializeModelContainer() -> ModelContainer {
         let schema = Schema([
             Workout.self,
+            Exercise.self,
             Settings.self,
-            StopwatchData.self
+            StopwatchData.self,
+            Time.self,
+            Tag.self
         ])
         
         let config = ModelConfiguration()

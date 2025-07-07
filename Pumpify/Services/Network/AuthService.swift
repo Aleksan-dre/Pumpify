@@ -129,5 +129,7 @@ final class AuthService {
         idToken = nil
         accessToken = nil
         currentUser = nil
+        // AuthState will be updated automatically via Firebase auth listener
+        print("✅ User signed out successfully")
     }
 }

@@ -81,11 +81,10 @@ final class SignUpViewModel: ObservableObject {
         AuthService.shared.loginWithGoogle { result in
             switch result {
             case .success:
-                DispatchQueue.main.async {
-                    self.isLoggedIn = true
-                }
+                // AuthState will be updated automatically via Firebase auth listener
+                print("✅ Google login successful")
             case .failure(let error):
-                print("Error signing in: \(error.localizedDescription)")
+                print("❌ Error signing in with Google: \(error.localizedDescription)")
             }
         }
     }
@@ -94,11 +93,10 @@ final class SignUpViewModel: ObservableObject {
         AuthService.shared.signUpWithEmail(email: email, password: password) { result in
             switch result {
             case .success:
-                DispatchQueue.main.async {
-                    self.isLoggedIn = true
-                }
+                // AuthState will be updated automatically via Firebase auth listener
+                print("✅ Email/password registration successful")
             case .failure(let error):
-                print("Error signing up: \(error.localizedDescription)")
+                print("❌ Error signing up: \(error.localizedDescription)")
             }
         }
     }

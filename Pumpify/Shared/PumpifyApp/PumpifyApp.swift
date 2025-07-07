@@ -10,9 +10,49 @@ import FirebaseCore
 import GoogleSignIn
 import AVFoundation
 import SwiftData
+import FirebaseAuth
 
 final class AuthState: ObservableObject {
-    @Published var isLoggedIn = AuthService.shared.getCurrentUser() != nil
+    @Published var isLoggedIn = false
+    @Published var currentUserId: String?
+    private var authStateHandle: AuthStateDidChangeListenerHandle?
+    
+    init() {
+        setupAuthStateListener()
+    }
+    
+    private func setupAuthStateListener() {
+        authStateHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            DispatchQueue.main.async {
+                let wasLoggedIn = self?.isLoggedIn ?? false
+                let previousUserId = self?.currentUserId
+                
+                self?.isLoggedIn = user != nil
+                self?.currentUserId = user?.uid
+                
+                // If user switched (logged out then back in as different user), 
+                // we need to clear local data
+                if wasLoggedIn && user != nil && previousUserId != user?.uid {
+                    self?.handleUserSwitch()
+                }
+            }
+        }
+    }
+    
+    private func handleUserSwitch() {
+        // Notify that user has switched - this will trigger data clearing
+        NotificationCenter.default.post(name: .userDidSwitch, object: nil)
+    }
+    
+    deinit {
+        if let handle = authStateHandle {
+            Auth.auth().removeStateDidChangeListener(handle)
+        }
+    }
+}
+
+extension Notification.Name {
+    static let userDidSwitch = Notification.Name("userDidSwitch")
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
@@ -42,7 +82,7 @@ struct PumpifyApp: App {
     var body: some Scene {
         WindowGroup {
             if authState.isLoggedIn {
-                MainTabViewFactory.make()
+                MainTabViewFactory.make(context: container.mainContext)
                     .environmentObject(authState)
             } else {
                 LoginViewFactory.make()

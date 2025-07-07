@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SignUpView: View {
     @StateObject var viewModel: SignUpViewModel
@@ -15,7 +16,7 @@ struct SignUpView: View {
             content
                 .navigationTitle("Create Account")
                 .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-                    MainTabViewFactory.make()
+                    MainTabViewFactory.make(context: ModelContainer.initializeModelContainer().mainContext)
                 }
         }
     }

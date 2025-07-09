@@ -47,6 +47,11 @@ struct CalendarView: View {
             .refreshable {
                 await viewModel.loadData()
             }
+            .onAppear {
+                Task {
+                    await viewModel.loadData()
+                }
+            }
         }
     }
 }
@@ -189,30 +194,41 @@ struct CalendarDayView: View {
     let exercises: [Exercise]
     @ObservedObject var viewModel: CalendarViewModel
     
+    private var isToday: Bool {
+        Calendar.current.isDateInToday(date)
+    }
+    
+    private var workoutGroups: [(Workout, [Exercise])] {
+        viewModel.workoutExercisesForDate(date)
+    }
+    
     var body: some View {
         NavigationLink(destination: ExerciseDetailsViewFactory.make(date: date, repository: viewModel.repository)) {
-            VStack(spacing: 4) {
+            VStack(spacing: 2) {
                 Text("\(Calendar.current.component(.day, from: date))")
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
                 
                 if !exercises.isEmpty {
-                    let exercisesDone = exercises.filter { exercise in
-                        viewModel.stopwatchDataFor(exerciseId: exercise.id, on: date) != nil
+                    VStack(spacing: 1) {
+                        ForEach(workoutGroups, id: \.0.id) { workout, workoutExercises in
+                            let exercisesDone = workoutExercises.filter { exercise in
+                                viewModel.stopwatchDataFor(exerciseId: exercise.id, on: date) != nil
+                            }
+                            
+                            Text("\(exercisesDone.count)/\(workoutExercises.count)")
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                                .foregroundColor(exercisesDone.count == workoutExercises.count ? .green : .orange)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 1)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(exercisesDone.count == workoutExercises.count ? Color.green.opacity(0.2) : Color.orange.opacity(0.2))
+                                )
+                        }
                     }
-                    
-                    // Show completion ratio (e.g., "2/5")
-                    Text("\(exercisesDone.count)/\(exercises.count)")
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .foregroundColor(exercisesDone.count == exercises.count ? .green : .orange)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(exercisesDone.count == exercises.count ? Color.green.opacity(0.2) : Color.orange.opacity(0.2))
-                        )
                 } else {
                     // Show a small dot to indicate no exercises
                     Circle()
@@ -232,8 +248,8 @@ struct CalendarDayView: View {
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(
-                        exercises.isEmpty ? Color.gray.opacity(0.2) : Color.accentColor.opacity(0.3),
-                        lineWidth: exercises.isEmpty ? 1 : 2
+                        isToday ? Color.accentColor : Color.clear,
+                        lineWidth: isToday ? 2 : 0
                     )
             )
         }
@@ -381,7 +397,7 @@ struct CalendarListDayView: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(
-                        RoundedRectangle(cornerRadius: 12)
+                        RoundedRectangle(cornerRadius: 8)
                             .fill(exercisesDone.count == exercises.count ? Color.green.opacity(0.2) : Color.orange.opacity(0.2))
                     )
             }
@@ -424,12 +440,8 @@ struct CalendarListDayView: View {
                                 .foregroundColor(stopwatchData != nil ? .green : .gray)
                                 .font(.title3)
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color(UIColor.secondarySystemBackground))
-                        )
                     }
                     
                     if exercises.count > 3 {
@@ -439,16 +451,16 @@ struct CalendarListDayView: View {
                             .padding(.top, 4)
                     }
                 }
-                .padding()
+                .padding(12)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color(UIColor.systemBackground))
-                        .shadow(radius: 2)
+                        .stroke(Color(UIColor.separator), lineWidth: 0.5)
                 )
             }
             .buttonStyle(PlainButtonStyle())
         }
-        .padding(.horizontal)
+        .padding(.horizontal, 16)
         .padding(.vertical, 8)
     }
 }

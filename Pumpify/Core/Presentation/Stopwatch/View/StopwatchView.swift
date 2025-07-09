@@ -77,20 +77,54 @@ struct Stopwatch: View {
                                 .cornerRadius(10)
                         }
                     }
+                    
+                    // Show reset button if there's existing data or current session has started
+                    if viewModel.previousElapsedTime > 0 || viewModel.hasStarted {
+                        Button(action: {
+                            Task {
+                                let success = await viewModel.resetStopwatchData()
+                                if success {
+                                    // Reset the UI state after successful reset
+                                    viewModel.hasStarted = false
+                                }
+                            }
+                        }) {
+                            Text("Reset")
+                                .padding()
+                                .background(Color.gray)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                    }
                 }
                 
                 Spacer()
                 
-                if !viewModel.hasStarted && viewModel.allowsManualEntry {
-                    VStack {
-                        Spacer()
-                        
+                if viewModel.allowsManualEntry {
+                    VStack(spacing: 16) {
                         Text("Did you complete the workout already?")
+                            .font(.headline)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
                         
-                        Form {
-                            DatePicker("Start Time", selection: $viewModel.manualStartDate, displayedComponents: .hourAndMinute)
-                            DatePicker("End Time", selection: $viewModel.manualEndDate, displayedComponents: .hourAndMinute)
+                        VStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Start Time")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                DatePicker("Start Time", selection: $viewModel.manualStartDate, displayedComponents: .hourAndMinute)
+                                    .datePickerStyle(.compact)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("End Time")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                DatePicker("End Time", selection: $viewModel.manualEndDate, displayedComponents: .hourAndMinute)
+                                    .datePickerStyle(.compact)
+                            }
                         }
+                        .padding(.horizontal)
                         
                         Button("Add manually") {
                             Task {
@@ -100,7 +134,11 @@ struct Stopwatch: View {
                                 }
                             }
                         }
-                        .disabled(viewModel.manualStartDate.withoutSeconds() == viewModel.manualEndDate.withoutSeconds())
+                        .disabled(viewModel.manualStartDate.withoutSeconds() >= viewModel.manualEndDate.withoutSeconds())
+                        .padding()
+                        .background(viewModel.manualStartDate.withoutSeconds() >= viewModel.manualEndDate.withoutSeconds() ? Color.gray : Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                     }
                     .padding(.vertical)
                 }

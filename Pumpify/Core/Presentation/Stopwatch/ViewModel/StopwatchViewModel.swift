@@ -40,8 +40,23 @@ final class StopwatchViewModel: BaseViewModel {
         self.exerciseId = exerciseId
         self.date = date
         self.stopwatchDataToUpdate = stopwatchDataToUpdate
-        self.manualStartDate = date
-        self.manualEndDate = date
+        
+        // Initialize manual dates with current time but on the exercise date
+        let calendar = Calendar.current
+        let now = Date()
+        let currentComponents = calendar.dateComponents([.hour, .minute], from: now)
+        let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+        
+        var startComponents = dateComponents
+        startComponents.hour = currentComponents.hour
+        startComponents.minute = currentComponents.minute
+        
+        var endComponents = dateComponents
+        endComponents.hour = currentComponents.hour
+        endComponents.minute = (currentComponents.minute ?? 0) + 30 // Default to 30 minutes later
+        
+        self.manualStartDate = calendar.date(from: startComponents) ?? date
+        self.manualEndDate = calendar.date(from: endComponents) ?? date
         
         // Initialize empty arrays before calling super.init
         self.stopwatchData = []
@@ -92,19 +107,19 @@ final class StopwatchViewModel: BaseViewModel {
         stop()
         
         return await withErrorHandling {
-            let times = self.stopwatchData.map { Time(start: $0.0, end: $0.1) }
-            let newData = StopwatchData(
-                completionDate: self.date,
-                exerciseId: self.exerciseId,
-                times: times
-            )
+            let newTimes = self.stopwatchData.map { Time(start: $0.0, end: $0.1) }
             
             if let existingData = self.stopwatchDataToUpdate {
-                // Update existing data
-                existingData.times = times
+                // Append new times to existing data
+                existingData.times.append(contentsOf: newTimes)
                 try await self.repository.updateStopwatchData(existingData)
             } else {
                 // Save new data
+                let newData = StopwatchData(
+                    completionDate: self.date,
+                    exerciseId: self.exerciseId,
+                    times: newTimes
+                )
                 try await self.repository.saveStopwatchData(newData)
             }
             return true
@@ -116,15 +131,60 @@ final class StopwatchViewModel: BaseViewModel {
         let startDate = manualStartDate.withoutSeconds()
         let endDate = manualEndDate.withoutSeconds()
         
-        guard startDate != endDate else { return false }
+        guard startDate < endDate else { return false }
         
         return await withErrorHandling {
-            let newData = StopwatchData(
-                completionDate: self.date,
-                exerciseId: self.exerciseId,
-                times: [Time(start: startDate, end: endDate)]
-            )
-            try await self.repository.saveStopwatchData(newData)
+            let newTime = Time(start: startDate, end: endDate)
+            
+            if let existingData = self.stopwatchDataToUpdate {
+                // Append to existing data
+                existingData.times.append(newTime)
+                try await self.repository.updateStopwatchData(existingData)
+            } else {
+                // Check if there's already data for this exercise on this date
+                if let existingStopwatchData = try await self.repository.fetchStopwatchData(for: self.exerciseId, on: self.date) {
+                    // Append to existing data
+                    existingStopwatchData.times.append(newTime)
+                    try await self.repository.updateStopwatchData(existingStopwatchData)
+                } else {
+                    // Create new data
+                    let newData = StopwatchData(
+                        completionDate: self.date,
+                        exerciseId: self.exerciseId,
+                        times: [newTime]
+                    )
+                    try await self.repository.saveStopwatchData(newData)
+                }
+            }
+            return true
+        } ?? false
+    }
+
+    @MainActor
+    func resetStopwatchData() async -> Bool {
+        return await withErrorHandling {
+            if let existingData = self.stopwatchDataToUpdate {
+                // Clear all times from existing data
+                existingData.times.removeAll()
+                try await self.repository.updateStopwatchData(existingData)
+                
+                // Reset local state
+                self.stopwatchData.removeAll()
+                self.previousElapsedTime = 0
+                self.currentElapsedTime = 0
+                self.hasStarted = false
+                self.updateTimeElapsed(0)
+            } else if let existingStopwatchData = try await self.repository.fetchStopwatchData(for: self.exerciseId, on: self.date) {
+                // Delete the existing data entirely
+                try await self.repository.deleteStopwatchData(existingStopwatchData)
+                
+                // Reset local state
+                self.stopwatchData.removeAll()
+                self.previousElapsedTime = 0
+                self.currentElapsedTime = 0
+                self.hasStarted = false
+                self.updateTimeElapsed(0)
+            }
             return true
         } ?? false
     }
@@ -137,7 +197,7 @@ final class StopwatchViewModel: BaseViewModel {
     }
     
     var allowsManualEntry: Bool {
-        stopwatchDataToUpdate == nil
+        true // Always allow manual entry
     }
     
     deinit {

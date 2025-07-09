@@ -312,16 +312,15 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
                 return false
             }
             
-            if exercise.startDate <= date && !exercise.repeatDays.isEmpty {
-                var weekdayOfDate = Calendar.current.dateComponents([.weekday], from: date).weekday!
-                if weekdayOfDate == 1 { weekdayOfDate = 8 }
-                weekdayOfDate -= 1
-                if weekdayOfDate == 0 { weekdayOfDate = 7 }
-                let weekday = DayOfWeek(rawValue: weekdayOfDate)!
-                return exercise.repeatDays.contains(weekday)
+            let componentsOfExercise = Calendar.current.dateComponents([.day, .month, .year], from: exercise.startDate)
+            if componentsOfDate == componentsOfExercise {
+                return true
             }
             
-            return false
+            var weekdayOfDate = (Calendar.current.dateComponents([.weekday], from: date).weekday! + 6) % 7
+            if weekdayOfDate == 0 { weekdayOfDate = 7 }
+            let weekday = DayOfWeek(rawValue: weekdayOfDate)!
+            return exercise.repeatDays.contains(weekday)
         }
     }
     

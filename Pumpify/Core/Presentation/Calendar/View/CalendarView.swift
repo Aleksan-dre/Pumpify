@@ -141,17 +141,21 @@ struct CalendarGridView: View {
     @ObservedObject var viewModel: CalendarViewModel
     
     var body: some View {
-        VStack {
+        VStack(spacing: 8) {
             // Days of the week header
-            HStack {
+            HStack(spacing: 2) {
                 ForEach(viewModel.daysOfWeek, id: \.self) { day in
                     Text(day.shortString)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
                         .frame(maxWidth: .infinity)
                 }
             }
+            .padding(.horizontal)
             
             ScrollView {
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 7), spacing: 2) {
                     // Empty cells for the beginning of the month
                     let numberOfEmptyCells = viewModel.numberOfEmptyCells(at: viewModel.currentMonth)
                     ForEach(0..<numberOfEmptyCells, id: \.self) { _ in
@@ -172,6 +176,7 @@ struct CalendarGridView: View {
                         )
                     }
                 }
+                .padding(.horizontal)
             }
         }
     }
@@ -185,42 +190,54 @@ struct CalendarDayView: View {
     @ObservedObject var viewModel: CalendarViewModel
     
     var body: some View {
-        VStack {
-            Text("\(Calendar.current.component(.day, from: date))")
-                .font(.caption)
-                .fontWeight(.semibold)
-            
-            if !exercises.isEmpty {
-                let exercisesDone = exercises.filter { exercise in
-                    viewModel.stopwatchDataFor(exerciseId: exercise.id, on: date) != nil
-                }
+        NavigationLink(destination: ExerciseDetailsViewFactory.make(date: date, repository: viewModel.repository)) {
+            VStack(spacing: 4) {
+                Text("\(Calendar.current.component(.day, from: date))")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
                 
-                ForEach(exercises.prefix(3), id: \.id) { exercise in
-                    let isDone = exercisesDone.contains { $0.id == exercise.id }
+                if !exercises.isEmpty {
+                    let exercisesDone = exercises.filter { exercise in
+                        viewModel.stopwatchDataFor(exerciseId: exercise.id, on: date) != nil
+                    }
                     
-                    ExerciseIndicatorView(
-                        text: exercise.name,
-                        complete: isDone
-                    )
+                    // Show completion ratio (e.g., "2/5")
+                    Text("\(exercisesDone.count)/\(exercises.count)")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundColor(exercisesDone.count == exercises.count ? .green : .orange)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(exercisesDone.count == exercises.count ? Color.green.opacity(0.2) : Color.orange.opacity(0.2))
+                        )
+                } else {
+                    // Show a small dot to indicate no exercises
+                    Circle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 4, height: 4)
                 }
                 
-                if exercises.count > 3 {
-                    Text("+\(exercises.count - 3) more")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
+                Spacer()
             }
-            
-            Spacer()
+            .frame(height: 80)
+            .frame(maxWidth: .infinity)
+            .padding(4)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(exercises.isEmpty ? Color(UIColor.systemBackground) : Color(UIColor.secondarySystemBackground))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(
+                        exercises.isEmpty ? Color.gray.opacity(0.2) : Color.accentColor.opacity(0.3),
+                        lineWidth: exercises.isEmpty ? 1 : 2
+                    )
+            )
         }
-        .frame(height: 80)
-        .padding(4)
-        .background(Color(UIColor.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-        )
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -346,37 +363,93 @@ struct CalendarListDayView: View {
     @ObservedObject var viewModel: CalendarViewModel
     
     var body: some View {
-        VStack {
+        VStack(spacing: 8) {
             HStack {
                 Text(DateFormatter.mediumDate.string(from: date))
-                    .font(.system(size: 15))
                     .font(.headline)
+                    .fontWeight(.semibold)
                 Spacer()
+                
+                let exercisesDone = exercises.filter { exercise in
+                    viewModel.stopwatchDataFor(exerciseId: exercise.id, on: date) != nil
+                }
+                
+                Text("\(exercisesDone.count)/\(exercises.count) completed")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(exercisesDone.count == exercises.count ? .green : .orange)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(exercisesDone.count == exercises.count ? Color.green.opacity(0.2) : Color.orange.opacity(0.2))
+                    )
             }
             
-            ForEach(exercises, id: \.id) { exercise in
-                let stopwatchData = viewModel.stopwatchDataFor(exerciseId: exercise.id, on: date)
-                
-                NavigationLink(destination: StopwatchViewFactory.make(exerciseId: exercise.id, date: date, repository: viewModel.repository)) {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(exercise.name)
-                                .font(.headline)
+            NavigationLink(destination: ExerciseDetailsViewFactory.make(date: date, repository: viewModel.repository)) {
+                VStack(spacing: 4) {
+                    ForEach(exercises.prefix(3), id: \.id) { exercise in
+                        let stopwatchData = viewModel.stopwatchDataFor(exerciseId: exercise.id, on: date)
+                        
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(exercise.name)
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                                
+                                if !exercise.tags.isEmpty {
+                                    Text(exercise.tags.joined(separator: ", "))
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            if let stopwatchData = stopwatchData {
+                                Text(String(format: "%@", stopwatchData.totalInterval.formattedTime()))
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.green)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .fill(Color.green.opacity(0.2))
+                                    )
+                            }
+                            
+                            Image(systemName: stopwatchData != nil ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(stopwatchData != nil ? .green : .gray)
+                                .font(.title3)
                         }
-                        Spacer()
-                        if let stopwatchData = stopwatchData {
-                            Text(String(format: "Time: %@", stopwatchData.totalInterval.formattedTime()))
-                                .padding([.horizontal])
-                        }
-                        Image(systemName: stopwatchData != nil ? "checkmark.circle.fill" : "circle")
-                            .foregroundColor(stopwatchData != nil ? .green : .gray)
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(UIColor.secondarySystemBackground))
+                        )
+                    }
+                    
+                    if exercises.count > 3 {
+                        Text("+ \(exercises.count - 3) more exercises")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
                     }
                 }
                 .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(UIColor.systemBackground))
+                        .shadow(radius: 2)
+                )
             }
+            .buttonStyle(PlainButtonStyle())
         }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
     }
 }
 

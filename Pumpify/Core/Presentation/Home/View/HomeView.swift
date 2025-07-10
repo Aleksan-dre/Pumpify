@@ -10,6 +10,7 @@ import SwiftData
 
 struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
+    @State private var showingSettings = false
     
     var body: some View {
         NavigationStack {
@@ -30,6 +31,19 @@ struct HomeView: View {
                     .padding(.horizontal)
             }
             .navigationTitle(viewModel.welcomeTitle)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingSettings = true
+                    }) {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundColor(.accentColor)
+                    }
+                }
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView()
+            }
             .refreshable {
                 await viewModel.refreshData()
             }
@@ -46,7 +60,7 @@ struct HomeView: View {
                     Text("Hint")
                         .multilineTextAlignment(.leading)
                         .font(.title2)
-                    Text("Consider going to the Settings tab to customize the application, set your name or enable notifications")
+                    Text("Consider tapping the Settings icon in the top right corner to customize the application, set your name or enable notifications")
                 }
             }
             .padding()

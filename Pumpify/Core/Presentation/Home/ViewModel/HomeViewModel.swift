@@ -16,13 +16,15 @@ final class HomeViewModel: BaseViewModel {
     @Published var stopwatchData: [StopwatchData] = []
     
     var welcomeTitle: String {
-        settings?.firstName.map {
-            String(format: NSLocalizedString("WelcomeWithName", comment: "Welcome message with user's name"), $0)
-        } ?? NSLocalizedString("Welcome", comment: "Generic welcome message")
+        if let firstName = settings?.firstName, !firstName.isEmpty {
+            return "Welcome \(firstName)"
+        } else {
+            return "Welcome"
+        }
     }
     
     var shouldShowHint: Bool {
-        settings?.firstName == nil
+        settings?.firstName == nil || settings?.firstName?.isEmpty == true
     }
     
     override init(repository: any DataRepositoryProtocol) {

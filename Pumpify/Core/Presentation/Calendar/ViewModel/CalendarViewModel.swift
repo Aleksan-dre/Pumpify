@@ -150,6 +150,25 @@ final class CalendarViewModel: BaseViewModel {
         return exercisesInDay(date: date)
     }
     
+    func workoutExercisesForDate(_ date: Date) -> [(Workout, [Exercise])] {
+        let exercisesOnDate = exercisesInDay(date: date)
+        var workoutGroups: [Workout: [Exercise]] = [:]
+        
+        // Group exercises by their parent workout
+        for workout in workouts {
+            let workoutExercisesOnDate = workout.exercises.filter { exercise in
+                exercisesOnDate.contains(exercise)
+            }
+            if !workoutExercisesOnDate.isEmpty {
+                workoutGroups[workout] = workoutExercisesOnDate
+            }
+        }
+        
+        return workoutGroups.map { (workout, exercises) in
+            (workout, exercises)
+        }.sorted { $0.0.name < $1.0.name }
+    }
+    
     func stopwatchDataFor(exerciseId: UUID, on date: Date) -> StopwatchData? {
         return stopwatchData.first { data in
             data.exerciseId == exerciseId && calendar.isDate(data.completionDate, inSameDayAs: date)

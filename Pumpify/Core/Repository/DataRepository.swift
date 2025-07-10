@@ -12,12 +12,21 @@ import Combine
 
 @MainActor
 final class DataRepository: ObservableObject, DataRepositoryProtocol {
-    let modelContext: ModelContext
+    nonisolated let modelContext: ModelContext
     private let firebaseService = FirebaseService.shared
     private var cancellables = Set<AnyCancellable>()
     
-    @Published var syncStatus: SyncStatus = .idle
-    @Published var syncError: Error?
+    @Published private var _syncStatus: SyncStatus = .idle
+    @Published private var _syncError: Error?
+    
+    // Nonisolated computed properties for protocol conformance
+    nonisolated var syncStatus: SyncStatus {
+        MainActor.assumeIsolated { _syncStatus }
+    }
+    
+    nonisolated var syncError: Error? {
+        MainActor.assumeIsolated { _syncError }
+    }
     
     // Track sync state for current user
     private var lastSyncedUserId: String?
@@ -114,14 +123,14 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         
         // Sync to Firebase if user is authenticated
         if let userId = Auth.auth().currentUser?.uid {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 let firebaseWorkout = FirebaseWorkout.fromSwiftData(workout, userId: userId)
                 _ = try await firebaseService.save(firebaseWorkout, to: "workouts", documentId: workout.id.uuidString)
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to sync workout to Firebase: \(error)")
             }
         }
@@ -131,14 +140,14 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         try modelContext.save()
         
         if let userId = Auth.auth().currentUser?.uid {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 let firebaseWorkout = FirebaseWorkout.fromSwiftData(workout, userId: userId)
                 _ = try await firebaseService.save(firebaseWorkout, to: "workouts", documentId: workout.id.uuidString)
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to update workout in Firebase: \(error)")
             }
         }
@@ -151,13 +160,13 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         
         // Delete from Firebase
         if Auth.auth().currentUser != nil {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 try await firebaseService.delete(from: "workouts", documentId: workout.id.uuidString)
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to delete workout from Firebase: \(error)")
             }
         }
@@ -176,7 +185,7 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
             // Only sync if we haven't synced for this user yet, or if user has changed
             if !hasSyncedForCurrentUser || lastSyncedUserId != currentUserId {
                 print("🔄 Syncing workouts for user: \(currentUserId)")
-                syncStatus = .syncing
+                _syncStatus = .syncing
                 
                 do {
                     // First clear all local data - this ensures no partial deletions
@@ -203,7 +212,7 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
                     // Check for and remove any duplicates that might have been created
                     try checkAndRemoveDuplicates()
                     
-                    syncStatus = .synced
+                    _syncStatus = .synced
                     
                     // Mark as synced for current user
                     lastSyncedUserId = currentUserId
@@ -211,8 +220,8 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
                     
                     print("✅ Workouts synced successfully for user: \(currentUserId)")
                 } catch {
-                    syncStatus = .error
-                    syncError = error
+                    _syncStatus = .error
+                    _syncError = error
                     print("❌ Failed to sync workouts from Firebase: \(error)")
                     // Return empty array on error to prevent showing stale data
                     return []
@@ -312,16 +321,15 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
                 return false
             }
             
-            if exercise.startDate <= date && !exercise.repeatDays.isEmpty {
-                var weekdayOfDate = Calendar.current.dateComponents([.weekday], from: date).weekday!
-                if weekdayOfDate == 1 { weekdayOfDate = 8 }
-                weekdayOfDate -= 1
-                if weekdayOfDate == 0 { weekdayOfDate = 7 }
-                let weekday = DayOfWeek(rawValue: weekdayOfDate)!
-                return exercise.repeatDays.contains(weekday)
+            let componentsOfExercise = Calendar.current.dateComponents([.day, .month, .year], from: exercise.startDate)
+            if componentsOfDate == componentsOfExercise {
+                return true
             }
             
-            return false
+            var weekdayOfDate = (Calendar.current.dateComponents([.weekday], from: date).weekday! + 6) % 7
+            if weekdayOfDate == 0 { weekdayOfDate = 7 }
+            let weekday = DayOfWeek(rawValue: weekdayOfDate)!
+            return exercise.repeatDays.contains(weekday)
         }
     }
     
@@ -346,14 +354,14 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         try modelContext.save()
         
         if Auth.auth().currentUser != nil {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 // Note: We need to store the Firebase document ID for proper deletion
                 // This is a limitation of the current implementation
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to delete stopwatch data from Firebase: \(error)")
             }
         }
@@ -376,14 +384,14 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         try modelContext.save()
         
         if let userId = Auth.auth().currentUser?.uid {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 let firebaseSettings = FirebaseSettings.fromSwiftData(settings, userId: userId)
                 _ = try await firebaseService.save(firebaseSettings, to: "settings", documentId: "user_settings")
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to update settings in Firebase: \(error)")
             }
         }
@@ -396,7 +404,7 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         try modelContext.save()
         
         if let userId = Auth.auth().currentUser?.uid {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 let firebaseExercise = FirebaseExercise.fromSwiftData(exercise, workoutId: workout.id.uuidString, userId: userId)
                 _ = try await firebaseService.save(firebaseExercise, to: "exercises", documentId: exercise.id.uuidString)
@@ -405,10 +413,10 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
                 let firebaseWorkout = FirebaseWorkout.fromSwiftData(workout, userId: userId)
                 _ = try await firebaseService.save(firebaseWorkout, to: "workouts", documentId: workout.id.uuidString)
                 
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to sync exercise to Firebase: \(error)")
             }
         }
@@ -418,7 +426,7 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         try modelContext.save()
         
         if let userId = Auth.auth().currentUser?.uid {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 let firebaseExercise = FirebaseExercise.fromSwiftData(exercise, workoutId: workout.id.uuidString, userId: userId)
                 _ = try await firebaseService.save(firebaseExercise, to: "exercises", documentId: exercise.id.uuidString)
@@ -427,10 +435,10 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
                 let firebaseWorkout = FirebaseWorkout.fromSwiftData(workout, userId: userId)
                 _ = try await firebaseService.save(firebaseWorkout, to: "workouts", documentId: workout.id.uuidString)
                 
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to update exercise in Firebase: \(error)")
             }
         }
@@ -445,13 +453,13 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         try modelContext.save()
         
         if Auth.auth().currentUser != nil {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 try await firebaseService.delete(from: "exercises", documentId: exercise.id.uuidString)
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to delete exercise from Firebase: \(error)")
             }
         }
@@ -464,14 +472,14 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         try modelContext.save()
         
         if let userId = Auth.auth().currentUser?.uid {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 let firebaseStopwatchData = FirebaseStopwatchData.fromSwiftData(stopwatchData, userId: userId)
                 _ = try await firebaseService.save(firebaseStopwatchData, to: "stopwatch_data", documentId: UUID().uuidString)
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to sync stopwatch data to Firebase: \(error)")
             }
         }
@@ -481,14 +489,14 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         try modelContext.save()
         
         if let userId = Auth.auth().currentUser?.uid {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 let firebaseStopwatchData = FirebaseStopwatchData.fromSwiftData(stopwatchData, userId: userId)
                 _ = try await firebaseService.save(firebaseStopwatchData, to: "stopwatch_data", documentId: UUID().uuidString)
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to update stopwatch data in Firebase: \(error)")
             }
         }
@@ -500,14 +508,14 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
         try modelContext.save()
         
         if let userId = Auth.auth().currentUser?.uid {
-            syncStatus = .syncing
+            _syncStatus = .syncing
             do {
                 let firebaseSettings = FirebaseSettings.fromSwiftData(settings, userId: userId)
                 _ = try await firebaseService.save(firebaseSettings, to: "settings", documentId: "user_settings")
-                syncStatus = .synced
+                _syncStatus = .synced
             } catch {
-                syncStatus = .error
-                syncError = error
+                _syncStatus = .error
+                _syncError = error
                 print("Failed to sync settings to Firebase: \(error)")
             }
         }
@@ -526,7 +534,7 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
             return
         }
         
-        syncStatus = .syncing
+        _syncStatus = .syncing
         print("🔄 Starting full sync for user: \(currentUserId)")
         
         do {
@@ -579,7 +587,7 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
             // Check for and remove any duplicates that might have been created
             try checkAndRemoveDuplicates()
             
-            syncStatus = .synced
+            _syncStatus = .synced
             
             // Mark as synced for current user
             lastSyncedUserId = currentUserId
@@ -587,8 +595,8 @@ final class DataRepository: ObservableObject, DataRepositoryProtocol {
             
             print("✅ All data synced successfully for user: \(currentUserId)")
         } catch {
-            syncStatus = .error
-            syncError = error
+            _syncStatus = .error
+            _syncError = error
             print("❌ Failed to sync all data: \(error)")
             throw error
         }

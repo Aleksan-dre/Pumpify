@@ -2,7 +2,7 @@
 //  StatisticsView.swift
 //  Pumpify
 //
-//  Created by AI Assistant on $(date).
+//  Created by Aleksandre Shalikashvili on 11.07.2025.
 //
 
 import SwiftUI
@@ -395,46 +395,4 @@ struct InsightRow: View {
         }
         .padding(.vertical, 4)
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    // Create a mock repository for preview
-    let mockRepository = MockDataRepository()
-    let viewModel = StatisticsViewModel(repository: mockRepository)
-    
-    return StatisticsView(viewModel: viewModel)
-}
-
-// Mock repository for preview
-class MockDataRepository: DataRepositoryProtocol {
-    var modelContext: ModelContext { fatalError("Not implemented for preview") }
-    var syncStatus: SyncStatus = .idle
-    var syncError: Error? = nil
-    
-    func fetchWorkouts() async throws -> [Workout] { [] }
-    func fetchWorkout(by id: UUID) async throws -> Workout? { nil }
-    func saveWorkout(_ workout: Workout) async throws {}
-    func updateWorkout(_ workout: Workout) async throws {}
-    func deleteWorkout(_ workout: Workout) async throws {}
-    func saveExercise(_ exercise: Exercise, to workout: Workout) async throws {}
-    func updateExercise(_ exercise: Exercise, in workout: Workout) async throws {}
-    func deleteExercise(_ exercise: Exercise, from workout: Workout) async throws {}
-    func fetchExercises(for workout: Workout) async throws -> [Exercise] { [] }
-    func fetchExercise(by id: UUID) async throws -> Exercise? { nil }
-    func fetchExercisesForDate(_ date: Date) async throws -> [Exercise] { [] }
-    func fetchStopwatchData(for exerciseId: UUID, on date: Date) async throws -> StopwatchData? { nil }
-    func fetchAllStopwatchData() async throws -> [StopwatchData] { [] }
-    func saveStopwatchData(_ stopwatchData: StopwatchData) async throws {}
-    func updateStopwatchData(_ stopwatchData: StopwatchData) async throws {}
-    func deleteStopwatchData(_ stopwatchData: StopwatchData) async throws {}
-    func saveSettings(_ settings: Settings) async throws {}
-    func fetchSettings() async throws -> Settings? { nil }
-    func updateSettings(_ settings: Settings) async throws {}
-    func syncAllData() async throws {}
-    func handleInitialLogin() async throws {}
-    func forceRefreshData() async throws {}
-    func clearLocalData() throws {}
-    func searchWorkouts(term: String) async throws -> [SearchResult] { [] }
 }

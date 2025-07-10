@@ -16,8 +16,19 @@
 		2C8770CF2DD0E7A400DB18BF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 2C8770CE2DD0E7A400DB18BF /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2CD7EC252E2064820069FD9D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C8770A92DD0E4DB00DB18BF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C8770B02DD0E4DB00DB18BF;
+			remoteInfo = Pumpify;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		2C8770B12DD0E4DB00DB18BF /* Pumpify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pumpify.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2CD7EC212E2064810069FD9D /* PumpifyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PumpifyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -39,6 +50,11 @@
 			path = Pumpify;
 			sourceTree = "<group>";
 		};
+		2CD7EC222E2064820069FD9D /* PumpifyTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = PumpifyTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +72,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2CD7EC1E2E2064810069FD9D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -63,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				2C8770B32DD0E4DB00DB18BF /* Pumpify */,
+				2CD7EC222E2064820069FD9D /* PumpifyTests */,
 				2C8770B22DD0E4DB00DB18BF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -71,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				2C8770B12DD0E4DB00DB18BF /* Pumpify.app */,
+				2CD7EC212E2064810069FD9D /* PumpifyTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -107,6 +132,29 @@
 			productReference = 2C8770B12DD0E4DB00DB18BF /* Pumpify.app */;
 			productType = "com.apple.product-type.application";
 		};
+		2CD7EC202E2064810069FD9D /* PumpifyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2CD7EC272E2064820069FD9D /* Build configuration list for PBXNativeTarget "PumpifyTests" */;
+			buildPhases = (
+				2CD7EC1D2E2064810069FD9D /* Sources */,
+				2CD7EC1E2E2064810069FD9D /* Frameworks */,
+				2CD7EC1F2E2064810069FD9D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2CD7EC262E2064820069FD9D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2CD7EC222E2064820069FD9D /* PumpifyTests */,
+			);
+			name = PumpifyTests;
+			packageProductDependencies = (
+			);
+			productName = PumpifyTests;
+			productReference = 2CD7EC212E2064810069FD9D /* PumpifyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -119,6 +167,10 @@
 				TargetAttributes = {
 					2C8770B02DD0E4DB00DB18BF = {
 						CreatedOnToolsVersion = 16.2;
+					};
+					2CD7EC202E2064810069FD9D = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 2C8770B02DD0E4DB00DB18BF;
 					};
 				};
 			};
@@ -141,12 +193,20 @@
 			projectRoot = "";
 			targets = (
 				2C8770B02DD0E4DB00DB18BF /* Pumpify */,
+				2CD7EC202E2064810069FD9D /* PumpifyTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		2C8770AF2DD0E4DB00DB18BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2CD7EC1F2E2064810069FD9D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -163,7 +223,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2CD7EC1D2E2064810069FD9D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2CD7EC262E2064820069FD9D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C8770B02DD0E4DB00DB18BF /* Pumpify */;
+			targetProxy = 2CD7EC252E2064820069FD9D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		2C8770BD2DD0E4DC00DB18BF /* Debug */ = {
@@ -299,11 +374,12 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pumpify/Shared/Info.plist;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "This app needs access to your music library to list and play your songs.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -334,11 +410,12 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pumpify/Shared/Info.plist;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "This app needs access to your music library to list and play your songs.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -354,6 +431,42 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		2CD7EC282E2064820069FD9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H88DSNGQ2T;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shalika.PumpifyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Pumpify.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Pumpify";
+			};
+			name = Debug;
+		};
+		2CD7EC292E2064820069FD9D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H88DSNGQ2T;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shalika.PumpifyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Pumpify.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Pumpify";
 			};
 			name = Release;
 		};
@@ -374,6 +487,15 @@
 			buildConfigurations = (
 				2C8770C02DD0E4DC00DB18BF /* Debug */,
 				2C8770C12DD0E4DC00DB18BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2CD7EC272E2064820069FD9D /* Build configuration list for PBXNativeTarget "PumpifyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2CD7EC282E2064820069FD9D /* Debug */,
+				2CD7EC292E2064820069FD9D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

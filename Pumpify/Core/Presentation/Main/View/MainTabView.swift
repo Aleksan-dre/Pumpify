@@ -55,6 +55,13 @@ struct MainTabView: View {
             }
             .tag(AppTab.workouts)
             
+            // MARK: – Statistics
+            StatisticsViewFactory.make(repository: repository)
+            .tabItem {
+                Label("Stats", systemImage: "chart.bar.fill")
+            }
+            .tag(AppTab.stats)
+            
             // MARK: – Settings
             SettingsView()
             .tabItem {

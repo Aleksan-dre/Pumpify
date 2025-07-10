@@ -139,6 +139,7 @@ struct FirebaseSettings: Codable, Identifiable {
     let availableTags: [FirebaseTag]
     let notificationTime: HourAndMinute?
     let dynamicFontSize: Double?
+    let hasAccessedSettings: Bool
     let userId: String
     let createdAt: Date
     let updatedAt: Date
@@ -153,6 +154,7 @@ struct FirebaseSettings: Codable, Identifiable {
         availableTags: [FirebaseTag] = [],
         notificationTime: HourAndMinute? = nil,
         dynamicFontSize: Double? = 14,
+        hasAccessedSettings: Bool = false,
         userId: String,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
@@ -166,6 +168,7 @@ struct FirebaseSettings: Codable, Identifiable {
         self.availableTags = availableTags
         self.notificationTime = notificationTime
         self.dynamicFontSize = dynamicFontSize
+        self.hasAccessedSettings = hasAccessedSettings
         self.userId = userId
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -285,6 +288,7 @@ extension FirebaseSettings {
         settings.availableTags = availableTags.map { $0.toSwiftData() }
         settings.notificationTime = notificationTime
         settings.dynamicFontSize = dynamicFontSize.map { CGFloat($0) }
+        settings.hasAccessedSettings = hasAccessedSettings
         return settings
     }
     
@@ -298,6 +302,7 @@ extension FirebaseSettings {
             availableTags: settings.availableTags.map { FirebaseTag.fromSwiftData($0, userId: userId) },
             notificationTime: settings.notificationTime,
             dynamicFontSize: settings.dynamicFontSize.map { Double($0) },
+            hasAccessedSettings: settings.hasAccessedSettings,
             userId: userId
         )
     }

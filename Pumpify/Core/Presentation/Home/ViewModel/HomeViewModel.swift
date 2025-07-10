@@ -11,19 +11,8 @@ import SwiftUI
 
 @MainActor
 final class HomeViewModel: BaseViewModel {
-    @Published var settings: Settings?
     @Published var todayExercises: [Exercise] = []
     @Published var stopwatchData: [StopwatchData] = []
-    
-    var welcomeTitle: String {
-        settings?.firstName.map {
-            String(format: NSLocalizedString("WelcomeWithName", comment: "Welcome message with user's name"), $0)
-        } ?? NSLocalizedString("Welcome", comment: "Generic welcome message")
-    }
-    
-    var shouldShowHint: Bool {
-        settings?.firstName == nil
-    }
     
     override init(repository: any DataRepositoryProtocol) {
         super.init(repository: repository)
@@ -35,16 +24,8 @@ final class HomeViewModel: BaseViewModel {
     
     @MainActor
     func loadInitialData() async {
-        await loadSettings()
         await loadTodayExercises()
         await loadStopwatchData()
-    }
-    
-    @MainActor
-    func loadSettings() async {
-        await withErrorHandling {
-            self.settings = try await self.repository.fetchSettings()
-        }
     }
     
     @MainActor

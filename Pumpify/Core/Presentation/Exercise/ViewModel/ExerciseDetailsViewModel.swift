@@ -14,8 +14,10 @@ final class ExerciseDetailsViewModel: BaseViewModel {
     @Published var exercises: [Exercise] = []
     @Published var stopwatchData: [StopwatchData] = []
     @Published var showRestartStopwatchConfirmation = false
+    @Published var showResetConfirmation = false
     @Published var navigatingToStopwatch = false
     @Published var continuingStopwatchDatum: StopwatchData?
+    @Published var exerciseToReset: Exercise?
     
     private let date: Date
     
@@ -79,14 +81,41 @@ final class ExerciseDetailsViewModel: BaseViewModel {
     }
     
     @MainActor
-    func confirmRestartStopwatch() {
+    func confirmContinueStopwatch() {
         showRestartStopwatchConfirmation = false
         navigatingToStopwatch = true
     }
     
     @MainActor
-    func cancelRestartStopwatch() {
+    func cancelContinueStopwatch() {
         showRestartStopwatchConfirmation = false
         continuingStopwatchDatum = nil
+    }
+    
+    @MainActor
+    func resetExerciseData(for exercise: Exercise) {
+        exerciseToReset = exercise
+        showResetConfirmation = true
+    }
+    
+    @MainActor
+    func confirmReset() {
+        guard let exercise = exerciseToReset else { return }
+        Task {
+            await withErrorHandling {
+                if let stopwatchData = self.getStopwatchData(for: exercise) {
+                    try await self.repository.deleteStopwatchData(stopwatchData)
+                    await self.loadData() // Refresh the view
+                }
+            }
+        }
+        showResetConfirmation = false
+        exerciseToReset = nil
+    }
+    
+    @MainActor
+    func cancelReset() {
+        showResetConfirmation = false
+        exerciseToReset = nil
     }
 }

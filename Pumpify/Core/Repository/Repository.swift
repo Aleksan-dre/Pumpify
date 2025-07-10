@@ -44,8 +44,8 @@ protocol SettingsRepositoryProtocol {
 }
 
 protocol SyncRepositoryProtocol {
-    var syncStatus: SyncStatus { get }
-    var syncError: Error? { get }
+    nonisolated var syncStatus: SyncStatus { get }
+    nonisolated var syncError: Error? { get }
     func syncAllData() async throws
     func forceRefreshData() async throws
     func clearLocalData() throws
@@ -55,5 +55,5 @@ protocol SyncRepositoryProtocol {
 // MARK: - Combined Repository Protocol
 
 protocol DataRepositoryProtocol: WorkoutRepositoryProtocol, ExerciseRepositoryProtocol, StopwatchRepositoryProtocol, SettingsRepositoryProtocol, SyncRepositoryProtocol, ObservableObject {
-    var modelContext: ModelContext { get }
+    nonisolated var modelContext: ModelContext { get }
 }

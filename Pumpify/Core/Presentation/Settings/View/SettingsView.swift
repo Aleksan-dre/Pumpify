@@ -35,6 +35,9 @@ struct SettingsView: View {
                 logoutSection()
             }
             .navigationTitle(Text("Settings"))
+            .onAppear {
+                markSettingsAsAccessed()
+            }
         }
     }
 }
@@ -90,10 +93,10 @@ private extension SettingsView {
         Binding(
             get: { self.settings?[keyPath: keyPath] ?? "" },
             set: { newValue in
-                self.updateSettings { settings in
-                    var mutableSettings = settings
-                    mutableSettings[keyPath: keyPath] = newValue
-                }
+                var currentSettings = self.settings ?? self.createNewSettings()
+                let finalValue = newValue.isEmpty ? nil : newValue
+                currentSettings[keyPath: keyPath] = finalValue
+                try? self.modelContext.save()
             }
         )
     }
@@ -115,10 +118,9 @@ private extension SettingsView {
         Binding(
             get: { self.settings?[keyPath: keyPath] ?? defaultValue },
             set: { newValue in
-                self.updateSettings { settings in
-                    var mutableSettings = settings
-                    mutableSettings[keyPath: keyPath] = newValue
-                }
+                var currentSettings = self.settings ?? self.createNewSettings()
+                currentSettings[keyPath: keyPath] = newValue
+                try? self.modelContext.save()
             }
         )
     }
@@ -168,10 +170,9 @@ private extension SettingsView {
         Binding(
             get: { self.settings?[keyPath: keyPath] ?? Date() }, // Default to current date if nil
             set: { newValue in
-                self.updateSettings { settings in
-                    var mutableSettings = settings
-                    mutableSettings[keyPath: keyPath] = newValue
-                }
+                var currentSettings = self.settings ?? self.createNewSettings()
+                currentSettings[keyPath: keyPath] = newValue
+                try? self.modelContext.save()
             }
         )
     }
@@ -260,12 +261,21 @@ private extension SettingsView {
     func updateSettings(_ updateBlock: (_ settings: Settings) -> Void) {
         let currentSettings = settings ?? createNewSettings()
         updateBlock(currentSettings)
+        try? modelContext.save()
     }
     
     func createNewSettings() -> Settings {
         let newSettings = Settings()
         modelContext.insert(newSettings)
         return newSettings
+    }
+    
+    func markSettingsAsAccessed() {
+        guard let currentSettings = settings else { return }
+        if !currentSettings.hasAccessedSettings {
+            currentSettings.hasAccessedSettings = true
+            try? modelContext.save()
+        }
     }
 }
 

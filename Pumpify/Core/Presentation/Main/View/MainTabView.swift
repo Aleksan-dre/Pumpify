@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 private enum AppTab {
-    case music, exercise, stats, settings, calendar, home, workouts
+    case music, exercise, stats, calendar, home, workouts
 }
 
 struct MainTabView: View {
@@ -55,12 +55,12 @@ struct MainTabView: View {
             }
             .tag(AppTab.workouts)
             
-            // MARK: – Settings
-            SettingsView()
+            // MARK: – Statistics
+            StatisticsViewFactory.make(repository: repository)
             .tabItem {
-                Label("Settings", systemImage: "gearshape")
+                Label("Stats", systemImage: "chart.bar.fill")
             }
-            .tag(AppTab.settings)
+            .tag(AppTab.stats)
         }
         .accentColor(settings?.accentColor.swiftuiAccentColor ?? .yellow)
         .navigationBarBackButtonHidden(true)

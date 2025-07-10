@@ -33,16 +33,34 @@ struct ExerciseDetailsView: View {
             
             Spacer()
         }
+        .navigationTitle("Exercises for \(DateFormatter.mediumDate.string(from: date))")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            Task {
+                await viewModel.loadData()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            Task {
+                await viewModel.loadData()
+            }
+        }
         .refreshable {
             await viewModel.refreshData()
         }
         .loadingOverlay(for: viewModel)
         .errorAlert(for: viewModel)
         .alert("Exercise Already Completed", isPresented: $viewModel.showRestartStopwatchConfirmation) {
-            Button("Restart", action: viewModel.confirmRestartStopwatch)
-            Button("Cancel", role: .cancel, action: viewModel.cancelRestartStopwatch)
+            Button("Add More Time", action: viewModel.confirmContinueStopwatch)
+            Button("Cancel", role: .cancel, action: viewModel.cancelContinueStopwatch)
         } message: {
-            Text("This exercise has already been completed today. Do you want to restart the stopwatch?")
+            Text("This exercise has already been completed today. Do you want to add more tracking time?")
+        }
+        .alert("Reset Exercise Time", isPresented: $viewModel.showResetConfirmation) {
+            Button("Reset", role: .destructive, action: viewModel.confirmReset)
+            Button("Cancel", role: .cancel, action: viewModel.cancelReset)
+        } message: {
+            Text("Are you sure you want to reset all tracked time for this exercise? This action cannot be undone.")
         }
     }
 
@@ -57,8 +75,26 @@ struct ExerciseDetailsView: View {
                 }
                 Spacer()
                 if let stopwatchData = stopwatchData {
-                    Text(String(format: "Time: %@", stopwatchData.totalInterval.formattedTime()))
-                        .padding([.horizontal])
+                    VStack(spacing: 4) {
+                        Text(String(format: "Time: %@", stopwatchData.totalInterval.formattedTime()))
+                        
+                        // Reset button for completed exercises
+                        Button(action: {
+                            viewModel.resetExerciseData(for: exercise)
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.clockwise")
+                                Text("Reset")
+                            }
+                            .font(.caption)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.orange)
+                            .cornerRadius(8)
+                        }
+                    }
+                    .padding([.horizontal])
                 }
                 Image(systemName: stopwatchData != nil ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(stopwatchData != nil ? .green : .gray)
@@ -79,6 +115,19 @@ struct ExerciseDetailsView: View {
             isActive: $viewModel.navigatingToStopwatch,
             label: { label }
         )
+        .onChange(of: viewModel.navigatingToStopwatch) { isNavigating in
+            if !isNavigating {
+                // User returned from stopwatch, refresh data
+                Task {
+                    await viewModel.loadData()
+                }
+            }
+        }
+        .onAppear {
+            Task {
+                await viewModel.loadData()
+            }
+        }
         .onTapGesture {
             viewModel.handleStopwatchNavigation(for: exercise)
         }

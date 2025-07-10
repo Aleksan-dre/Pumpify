@@ -2,7 +2,7 @@
 //  StatisticsViewModel.swift
 //  Pumpify
 //
-//  Created by AI Assistant on $(date).
+//  Created by Aleksandre Shalikashvili on 11.07.2025.
 //
 
 import Foundation

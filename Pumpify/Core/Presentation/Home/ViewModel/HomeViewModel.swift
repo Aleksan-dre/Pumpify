@@ -11,21 +11,8 @@ import SwiftUI
 
 @MainActor
 final class HomeViewModel: BaseViewModel {
-    @Published var settings: Settings?
     @Published var todayExercises: [Exercise] = []
     @Published var stopwatchData: [StopwatchData] = []
-    
-    var welcomeTitle: String {
-        if let firstName = settings?.firstName, !firstName.isEmpty {
-            return "Welcome \(firstName)"
-        } else {
-            return "Welcome"
-        }
-    }
-    
-    var shouldShowHint: Bool {
-        settings?.firstName == nil || settings?.firstName?.isEmpty == true
-    }
     
     override init(repository: any DataRepositoryProtocol) {
         super.init(repository: repository)
@@ -37,16 +24,8 @@ final class HomeViewModel: BaseViewModel {
     
     @MainActor
     func loadInitialData() async {
-        await loadSettings()
         await loadTodayExercises()
         await loadStopwatchData()
-    }
-    
-    @MainActor
-    func loadSettings() async {
-        await withErrorHandling {
-            self.settings = try await self.repository.fetchSettings()
-        }
     }
     
     @MainActor

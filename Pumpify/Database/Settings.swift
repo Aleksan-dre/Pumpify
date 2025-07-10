@@ -18,11 +18,13 @@ class Settings {
     var availableTags: [Tag]
     var notificationTime: HourAndMinute?
     var dynamicFontSize: CGFloat?
+    var hasAccessedSettings: Bool = false
     
     init() {
         self.accentColor = .yellow
         self.availableTags = []
         self.dynamicFontSize = 14
+        self.hasAccessedSettings = false
     }
 }
 

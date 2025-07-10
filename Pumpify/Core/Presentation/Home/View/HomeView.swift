@@ -11,11 +11,29 @@ import SwiftData
 struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
     @State private var showingSettings = false
+    @Query var settingsList: [Settings]
+    var settings: Settings? { settingsList.first }
+    
+    var welcomeTitle: String {
+        if let firstName = settings?.firstName, !firstName.isEmpty {
+            return "Welcome \(firstName)"
+        } else {
+            return "Welcome"
+        }
+    }
+    
+    var shouldShowHint: Bool {
+        guard let settings = settings else { return true }
+        // Hide hint if user has a first name OR has accessed settings
+        let hasName = settings.firstName != nil && !settings.firstName!.isEmpty
+        let hasAccessedSettings = settings.hasAccessedSettings
+        return !hasName && !hasAccessedSettings
+    }
     
     var body: some View {
         NavigationStack {
             VStack {
-                if viewModel.shouldShowHint {
+                if shouldShowHint {
                     hintSection
                 }
                 
@@ -30,7 +48,7 @@ struct HomeView: View {
                 ExerciseDetailsViewFactory.make(date: Date(), repository: viewModel.repository)
                     .padding(.horizontal)
             }
-            .navigationTitle(viewModel.welcomeTitle)
+            .navigationTitle(welcomeTitle)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
